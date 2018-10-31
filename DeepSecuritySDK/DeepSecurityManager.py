@@ -186,6 +186,9 @@ class DeepSecurity:
                 row['ec2_virtual_machine_summary_cloud_provider'] = [restComputer.ec2_virtual_machine_summary.cloud_provider]
                 row['ec2_virtual_machine_summary_dns_name'] = [restComputer.ec2_virtual_machine_summary.dns_name]
                 row['ec2_virtual_machine_summary_instance_id'] = [restComputer.ec2_virtual_machine_summary.instance_id]
+                if restComputer.ec2_virtual_machine_summary.metadata:
+                    for keyvalue in restComputer.ec2_virtual_machine_summary.metadata:
+                        row['aws_tag:{0}'.format(keyvalue.name)] = [keyvalue.value]
                 row['ec2_virtual_machine_summary_metadata'] = [restComputer.ec2_virtual_machine_summary.metadata]
                 row['ec2_virtual_machine_summary_operating_system'] = [restComputer.ec2_virtual_machine_summary.operating_system]
                 row['ec2_virtual_machine_summary_private_ip_address'] = [restComputer.ec2_virtual_machine_summary.private_ip_address]
@@ -331,8 +334,10 @@ class DeepSecurity:
                 row['virtualUuid'] = [soapComputer.virtualUuid]
 
             new_df = pd.DataFrame.from_dict(row)
+            new_df = new_df.set_index('id')
             if df is None:
                 df = new_df
             else:
                 df = pd.concat([new_df, df])
+
         return df
